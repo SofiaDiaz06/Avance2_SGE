@@ -9,6 +9,9 @@ use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
+    /**
+     * Crea (o actualiza) permisos y roles. Se puede ejecutar varias veces sin duplicar registros.
+     */
     public function run(): void
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
@@ -24,12 +27,16 @@ class RolePermissionSeeder extends Seeder
             'ver-usuarios', 'crear-usuarios', 'editar-usuarios',
             'ver-roles', 'crear-roles', 'editar-roles', 'eliminar-roles',
             'ver-permisos', 'crear-permisos', 'eliminar-permisos',
+            // Inventario (kardex) y auditoría (Clase 12)
+            'ver-inventario', 'ajustar-inventario',
+            'ver-auditoria',
         ];
 
         foreach ($permissions as $permission) {
             Permission::findOrCreate($permission);
         }
 
+        // El administrador siempre tiene TODOS los permisos
         Role::findOrCreate('admin')->syncPermissions(Permission::all());
 
         Role::findOrCreate('vendedor')->syncPermissions([
@@ -43,6 +50,7 @@ class RolePermissionSeeder extends Seeder
             'ver-categorias',
             'ver-proveedores', 'crear-proveedores', 'editar-proveedores',
             'ver-compras', 'crear-compras', 'recibir-compras',
+            'ver-inventario', 'ajustar-inventario',
         ]);
     }
 }

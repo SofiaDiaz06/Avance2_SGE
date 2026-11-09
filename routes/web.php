@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\ActiveRoleController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
@@ -71,6 +73,22 @@ Route::middleware('auth')->group(function () {
         Route::patch('purchases/{purchase}/receive', [PurchaseController::class, 'receive'])->name('purchases.receive');
         Route::get('purchases/{purchase}/pdf', [PurchaseController::class, 'pdf'])->name('purchases.pdf');
         Route::resource('purchases', PurchaseController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+    });
+
+    // Inventario: kardex y ajustes (Clase 12, con protección de módulo)
+    Route::middleware('module:inventory')->group(function () {
+        Route::get('inventario/kardex', [InventoryController::class, 'kardex'])->name('inventory.kardex');
+        Route::get('inventario/kardex/{product}/pdf', [InventoryController::class, 'pdf'])
+            ->withTrashed()->name('inventory.pdf');
+        Route::get('inventario/ajustes/{product}', [InventoryController::class, 'adjust'])
+            ->withTrashed()->name('inventory.adjust');
+        Route::post('inventario/ajustes/{product}', [InventoryController::class, 'storeAdjustment'])
+            ->withTrashed()->name('inventory.adjust.store');
+    });
+
+    // Auditoría (Clase 12, con protección de módulo)
+    Route::middleware('module:audit')->group(function () {
+        Route::get('auditoria', [AuditController::class, 'index'])->name('audit.index');
     });
 
     // Configuración: usuarios, roles y permisos

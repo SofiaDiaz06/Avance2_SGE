@@ -4,11 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\InventoryService;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    public function run(): void
+    public function run(InventoryService $inventory): void
     {
         $cuadernos = Category::firstOrCreate(['name' => 'Cuadernos y Libretas'], ['description' => 'Cuadernos argollados y cosidos']);
         $escritura = Category::firstOrCreate(['name' => 'Escritura'], ['description' => 'Bolígrafos y lápices']);
@@ -33,7 +34,10 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            Product::firstOrCreate(['name' => $product['name']], $product);
+            $model = Product::firstOrCreate(['name' => $product['name']], $product);
+            
+            // Clase 12: saldo inicial en el kardex para cada producto de la papelería[cite: 34, 35]
+            $inventory->opening($model);[cite: 34, 35]
         }
     }
 }

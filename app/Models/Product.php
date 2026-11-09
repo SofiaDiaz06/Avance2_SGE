@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
+
+    // Auditoría (Clase 12)
+    protected string $auditLog = 'productos';
+
+    // El stock NO se audita aquí: sus cambios quedan en el kardex (inventory_movements)
+    protected array $auditExcept = ['stock'];
 
     protected $fillable = [
         'name',
@@ -40,9 +47,15 @@ class Product extends Model
         return $this->hasMany(SaleDetail::class);
     }
 
-    // Relación: Un producto aparece en muchos detalles de compra[cite: 70]
+    // Relación: Un producto aparece en muchos detalles de compra
     public function purchaseDetails()
     {
         return $this->hasMany(PurchaseDetail::class);
+    }
+
+    // Relación: movimientos del kardex (Clase 12)
+    public function movements()
+    {
+        return $this->hasMany(InventoryMovement::class);
     }
 }

@@ -59,6 +59,22 @@
                         </a>
                     @endif
 
+                    <!-- Kardex (Clase 12) -->
+                    @if(App\Models\Module::isActive('inventory') && auth()->user()->can('ver-inventario'))
+                        <a href="{{ route('inventory.kardex') }}" style="color: #ffffff;" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition duration-150 ease-in-out hover:bg-[#004e89] {{ request()->routeIs('inventory.*') ? 'border-b-2 border-[#407ba7] bg-[#004e89]' : '' }}">
+                            <svg class="w-4 h-4 me-1.5" style="color: #407ba7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                            Kardex
+                        </a>
+                    @endif
+
+                    <!-- Auditoría (Clase 12) -->
+                    @if(App\Models\Module::isActive('audit') && auth()->user()->can('ver-auditoria'))
+                        <a href="{{ route('audit.index') }}" style="color: #ffffff;" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition duration-150 ease-in-out hover:bg-[#004e89] {{ request()->routeIs('audit.*') ? 'border-b-2 border-[#407ba7] bg-[#004e89]' : '' }}">
+                            <svg class="w-4 h-4 me-1.5" style="color: #407ba7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Auditoría
+                        </a>
+                    @endif
+
                     <!-- Configuración -->
                     @canany(['ver-usuarios', 'ver-roles', 'ver-permisos'])
                         <a href="{{ route('settings.index') }}" style="color: #ffffff;" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition duration-150 ease-in-out hover:bg-[#004e89] {{ request()->routeIs('settings.*') ? 'border-b-2 border-[#407ba7] bg-[#004e89]' : '' }}">
@@ -172,6 +188,18 @@
                 </x-responsive-nav-link>
             @endif
 
+            @if(App\Models\Module::isActive('inventory') && auth()->user()->can('ver-inventario'))
+                <x-responsive-nav-link :href="route('inventory.kardex')" :active="request()->routeIs('inventory.*')" class="text-white">
+                    {{ __('Kardex') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if(App\Models\Module::isActive('audit') && auth()->user()->can('ver-auditoria'))
+                <x-responsive-nav-link :href="route('audit.index')" :active="request()->routeIs('audit.*')" class="text-white">
+                    {{ __('Auditoría') }}
+                </x-responsive-nav-link>
+            @endif
+
             @canany(['ver-usuarios', 'ver-roles', 'ver-permisos'])
                 <x-responsive-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')" class="text-white">
                     {{ __('Configuración') }}
@@ -201,7 +229,7 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                <form method="POST" action="{{ route('logout')?>" class="w-full">
                     @csrf
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();

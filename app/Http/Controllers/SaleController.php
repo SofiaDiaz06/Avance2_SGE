@@ -6,6 +6,7 @@ use App\Http\Requests\StoreSaleRequest;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Services\InventoryService;
 use App\Services\SaleService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class SaleController extends Controller implements HasMiddleware
             ->with(['client', 'user'])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $search = '%'.$request->string('search').'%';
+                // Se agrupa el OR entre paréntesis para no anular los filtros de fecha
                 $q->where(function ($q) use ($search) {
                     $q->where('invoice_number', 'like', $search)
                         ->orWhereHas('client', fn ($q) => $q->where('name', 'like', $search));
@@ -55,7 +57,6 @@ class SaleController extends Controller implements HasMiddleware
     {
         return view('sales.create', [
             'clients' => Client::where('active', true)->orderBy('name')->get(['id', 'name', 'document_number']),
-            // Se removió ->where('stock', '>', 0) para que liste todos los productos activos igual que en compras
             'products' => Product::where('active', true)->orderBy('name')->get(['id', 'name', 'price', 'stock']),
         ]);
     }
@@ -74,29 +75,33 @@ class SaleController extends Controller implements HasMiddleware
     public function show(Sale $sale)
     {
         $sale->load(['client', 'user', 'details.product']);
+
         return view('sales.show', ['sale' => $sale]);
     }
 
-    public function destroy(Sale $sale)
+    public function destroy(Sale $sale, InventoryService $inventory)
     {
-        DB::transaction(function () use ($sale) {
+        // Regla de negocio: al anular, se devuelve el stock a los productos (con movimiento en el kardex)
+        DB::transaction(function () use ($sale, $inventory) {
             foreach ($sale->details as $detail) {
                 if ($detail->product) {
-                    $detail->product->increment('stock', $detail->quantity);
+                    $inventory->entry($detail->product, $detail->quantity, 'anulacion_venta', $sale, (float) $detail->unit_price);
                 }
             }
+
+            $sale->update(['status' => 'anulada']);
+            $sale->delete();
         });
-        
-        $sale->update(['status' => 'anulada']);
-        $sale->delete();
 
         return redirect()->route('sales.index')
             ->with('success', "Venta «{$sale->invoice_number}» anulada y stock devuelto.");
     }
 
+    // Clase anterior: factura de venta en PDF
     public function pdf(Sale $sale)
     {
         $sale->load(['client', 'user', 'details.product']);
+
         return Pdf::loadView('pdf.sale', ['sale' => $sale])
             ->setPaper('letter')
             ->stream("{$sale->invoice_number}.pdf");

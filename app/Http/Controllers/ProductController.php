@@ -6,9 +6,13 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\InventoryService;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\View\View;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -22,7 +26,7 @@ class ProductController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $showTrashed = $request->boolean('trashed') && $request->user()->can('eliminar-productos');
 
@@ -30,8 +34,8 @@ class ProductController extends Controller implements HasMiddleware
             ->with('category')
             ->when($showTrashed, fn ($query) => $query->onlyTrashed())
             ->when($request->filled('search'), function ($query) use ($request) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('name', 'like', '%'.$request->string('search').'%')
+                $query->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%'.$request->string('search').'%')
                         ->orWhere('description', 'like', '%'.$request->string('search').'%');
                 });
             })
@@ -49,7 +53,7 @@ class ProductController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function create()
+    public function create(): View
     {
         return view('products.create', [
             'product' => new Product(['active' => true, 'stock' => 0]),
@@ -57,35 +61,34 @@ class ProductController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request, InventoryService $inventory): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['active'] = $request->has('active');
+        $product = Product::create($request->validated());
 
-        Product::create($validated);
+        // Clase 12: el stock con el que se crea queda como inventario inicial en el kardex
+        $inventory->opening($product);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto creado exitosamente.');
     }
 
-    public function edit(Product $product)
+    public function edit(Product $product): View
     {
-        $categories = Category::all();
-        return view('products.edit', compact('product', 'categories'));
+        return view('products.edit', [
+            'product' => $product,
+            'categories' => $this->selectableCategories(),
+        ]);
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['active'] = $request->has('active');
-
-        $product->update($validated);
+        $product->update($request->validated());
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado exitosamente.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
 
@@ -96,30 +99,30 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Muestra el listado de productos en la papelera.
      */
-    public function trash()
+    public function trash(): View
     {
         $products = Product::onlyTrashed()->orderBy('name')->paginate(10);
         return view('products.trash', compact('products'));
     }
 
-    /**
-     * Restaura un producto eliminado.
-     */
-    public function restore($id)
+    public function restore(Product $product): RedirectResponse
     {
-        $product = Product::withTrashed()->findOrFail($id);
-
         if ($product->category?->trashed()) {
             return back()->with('error', "Restaura primero la categoría «{$product->category->name}».");
         }
 
         $product->restore();
 
-        return redirect()->route('products.index')
-            ->with('success', "Producto «{$product->name}» restaurado exitosamente.");
+        return redirect()->route('products.index', ['trashed' => 1])
+            ->with('success', "Producto «{$product->name}» restaurado.");
     }
 
-    private function selectableCategories()
+    /**
+     * Categorías que se pueden asignar a un producto.
+     *
+     * @return Collection<int, Category>
+     */
+    private function selectableCategories(): Collection
     {
         return Category::where('active', true)->orderBy('name')->get(['id', 'name']);
     }

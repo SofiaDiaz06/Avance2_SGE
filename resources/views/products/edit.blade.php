@@ -49,14 +49,18 @@
                         @enderror
                     </div>
 
-                    <!-- Stock -->
+                    <!-- Stock (Clase 12: Solo lectura con enlaces al Kardex y Ajuste) -->
                     <div>
-                        <label for="stock" class="block font-medium text-sm text-gray-700 mb-1">Stock</label>
-                        <input id="stock" type="number" min="0" name="stock" value="{{ old('stock', $product->stock) }}" required
-                               class="w-full rounded-lg border-gray-300 focus:border-[#004e89] focus:ring-[#004e89] shadow-sm">
-                        @error('stock')
-                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <label class="block font-medium text-sm text-gray-700 mb-1">Stock actual</label>
+                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ $product->stock }}</p>
+                        <div class="mt-1 space-x-3 text-sm">
+                            @can('ver-inventario')
+                                <a href="{{ route('inventory.kardex', ['product' => $product->id]) }}" class="text-[#004e89] hover:underline font-medium">Ver kardex</a>
+                            @endcan
+                            @can('ajustar-inventario')
+                                <a href="{{ route('inventory.adjust', $product) }}" class="text-[#004e89] hover:underline font-medium">Ajustar inventario</a>
+                            @endcan
+                        </div>
                     </div>
 
                     <!-- Campo Estado Activo / Inactivo -->

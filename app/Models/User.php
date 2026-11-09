@@ -6,6 +6,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Models\Concerns\LogsActivity; // Import necesario para la auditoría[cite: 63]
+use Spatie\Activitylog\Support\LogOptions;          // Import necesario para las opciones de log[cite: 64]
 use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
@@ -13,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    use HasFactory, HasRoles, LogsActivity, Notifiable; // Se añade el trait LogsActivity[cite: 64]
 
     protected $fillable = [
         'name', 'email', 'password', 'active',
@@ -34,6 +36,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'active' => 'boolean',
         ];
+    }
+
+    // Configuración del registro de actividad (Auditoría Clase 12)[cite: 64, 65]
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'active'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('usuarios');
     }
 
     public function activeRole(): ?Role
