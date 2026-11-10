@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\Settings\BrandingController;
 use App\Http\Controllers\Settings\PermissionController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
@@ -91,7 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::get('auditoria', [AuditController::class, 'index'])->name('audit.index');
     });
 
-    // Configuración: usuarios, roles y permisos
+    // Configuración: usuarios, roles, permisos e identidad corporativa
     Route::prefix('configuracion')->name('settings.')->group(function () {
         Route::get('/', SettingsController::class)->name('index');
         Route::patch('usuarios/{user}/estado', [UserController::class, 'toggle'])->name('users.toggle');
@@ -104,6 +105,10 @@ Route::middleware('auth')->group(function () {
         Route::put('permisos', [PermissionController::class, 'updateMatrix'])->name('permissions.matrix');
         Route::post('permisos', [PermissionController::class, 'store'])->name('permissions.store');
         Route::delete('permisos/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+
+        // Identidad corporativa (Configuración visual)
+        Route::get('identidad', [BrandingController::class, 'edit'])->name('branding.edit');
+        Route::put('identidad', [BrandingController::class, 'update'])->name('branding.update');
     });
 });
 

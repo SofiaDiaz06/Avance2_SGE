@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ModuleSeeder::class,
             RolePermissionSeeder::class,
+            CompanySettingSeeder::class, // Añadido para inicializar la identidad corporativa
             CategorySeeder::class,
             ProductSeeder::class,
             ClientSeeder::class,

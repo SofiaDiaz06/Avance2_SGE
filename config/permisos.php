@@ -14,6 +14,7 @@ return [
         'usuarios' => 'Usuarios',
         'roles' => 'Roles',
         'permisos' => 'Permisos',
+        'branding' => 'Identidad corporativa', // nuevo (configuración visual)
     ],
     'actions' => [
         'ver' => 'Ver',

@@ -30,6 +30,8 @@ class RolePermissionSeeder extends Seeder
             // Inventario (kardex) y auditoría (Clase 12)
             'ver-inventario', 'ajustar-inventario',
             'ver-auditoria',
+            // Identidad corporativa (guía de configuración visual)
+            'ver-branding', 'editar-branding',
         ];
 
         foreach ($permissions as $permission) {

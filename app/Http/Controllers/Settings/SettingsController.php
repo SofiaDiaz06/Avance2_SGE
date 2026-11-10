@@ -14,7 +14,8 @@ class SettingsController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:ver-usuarios|ver-roles|ver-permisos'),
+            // Basta con UNO de los permisos (el | significa «o»)
+            new Middleware('permission:ver-usuarios|ver-roles|ver-permisos|ver-branding'),
         ];
     }
 
