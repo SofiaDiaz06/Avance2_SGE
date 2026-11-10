@@ -34,10 +34,7 @@ class ProductController extends Controller implements HasMiddleware
             ->with('category')
             ->when($showTrashed, fn ($query) => $query->onlyTrashed())
             ->when($request->filled('search'), function ($query) use ($request) {
-                $query->where(function ($query) use ($request) {
-                    $query->where('name', 'like', '%'.$request->string('search').'%')
-                        ->orWhere('description', 'like', '%'.$request->string('search').'%');
-                });
+                $query->where('name', 'like', '%'.$request->string('search')->value().'%');
             })
             ->when($request->filled('category'), fn ($query) => $query->where('category_id', $request->integer('category')))
             ->when($request->filled('status'), fn ($query) => $query->where('active', $request->input('status') === 'active'))
@@ -64,8 +61,6 @@ class ProductController extends Controller implements HasMiddleware
     public function store(StoreProductRequest $request, InventoryService $inventory): RedirectResponse
     {
         $product = Product::create($request->validated());
-
-        // Clase 12: el stock con el que se crea queda como inventario inicial en el kardex
         $inventory->opening($product);
 
         return redirect()->route('products.index')
@@ -96,9 +91,6 @@ class ProductController extends Controller implements HasMiddleware
             ->with('success', "Producto «{$product->name}» enviado a la papelera.");
     }
 
-    /**
-     * Muestra el listado de productos en la papelera.
-     */
     public function trash(): View
     {
         $products = Product::onlyTrashed()->orderBy('name')->paginate(10);
@@ -117,11 +109,6 @@ class ProductController extends Controller implements HasMiddleware
             ->with('success', "Producto «{$product->name}» restaurado.");
     }
 
-    /**
-     * Categorías que se pueden asignar a un producto.
-     *
-     * @return Collection<int, Category>
-     */
     private function selectableCategories(): Collection
     {
         return Category::where('active', true)->orderBy('name')->get(['id', 'name']);
