@@ -31,7 +31,7 @@ class UserController extends Controller implements HasMiddleware
             ->with('roles')
             ->withCount('permissions')
             ->when($request->filled('search'), function ($q) use ($request) {
-                $search = '%' . $request->string('search') . '%';
+                $search = '%'.$request->string('search').'%';
                 $q->where(fn ($q) => $q->where('name', 'like', $search)->orWhere('email', 'like', $search));
             })
             ->when($request->filled('role'), fn ($q) => $q->role($request->input('role')))
@@ -54,6 +54,7 @@ class UserController extends Controller implements HasMiddleware
     public function store(StoreUserRequest $request, AccessControlService $service)
     {
         $user = $service->saveUser(new User, $request->validated(), $request->user());
+
         return redirect()->route('settings.users.index')
             ->with('success', "Usuario «{$user->name}» creado.");
     }
@@ -66,6 +67,7 @@ class UserController extends Controller implements HasMiddleware
     public function update(UpdateUserRequest $request, User $user, AccessControlService $service)
     {
         $service->saveUser($user, $request->validated(), $request->user());
+
         return redirect()->route('settings.users.index')
             ->with('success', "Usuario «{$user->name}» actualizado.");
     }
@@ -78,7 +80,7 @@ class UserController extends Controller implements HasMiddleware
             return back()->with('error', collect($e->errors())->flatten()->first());
         }
 
-        return back()->with('success', "Usuario «{$user->name}» " . ($user->active ? 'activado.' : 'desactivado.'));
+        return back()->with('success', "Usuario «{$user->name}» ".($user->active ? 'activado.' : 'desactivado.'));
     }
 
     private function formData(User $user): array

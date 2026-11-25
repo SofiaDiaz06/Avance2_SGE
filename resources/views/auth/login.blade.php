@@ -4,8 +4,8 @@
 
     <!-- Encabezado de la Tarjeta -->
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-xl transform transition-transform hover:scale-105 duration-300 bg-brand/20 border border-brand/40">
-            <x-application-logo class="w-8 h-8 fill-current text-brand" />
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-3 shadow-xl transform transition-transform hover:scale-105 duration-300 bg-white/95 p-2 border border-brand/40">
+            <img src="{{ asset('images/logo-empresa.png') }}" alt="Logo {{ $branding->trade_name ?? 'Empresa' }}" class="max-h-full max-w-full object-contain">
         </div>
         <h1 class="text-2xl font-extrabold text-white tracking-tight">Iniciar sesión</h1>
         <p class="text-xs text-slate-300 mt-1">Ingrese con su correo y contraseña.</p>

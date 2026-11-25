@@ -42,6 +42,7 @@ class RoleController extends Controller implements HasMiddleware
         $role = DB::transaction(function () use ($request, $service) {
             $role = Role::create(['name' => $request->validated('name'), 'guard_name' => 'web']);
             $service->syncRolePermissions($role, $request->validated('permissions'));
+
             return $role;
         });
 
@@ -86,6 +87,7 @@ class RoleController extends Controller implements HasMiddleware
     private function formData(Role $role): array
     {
         $groups = PermissionCatalog::grouped();
+
         return [
             'role' => $role,
             'groups' => $groups,

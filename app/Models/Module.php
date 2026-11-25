@@ -17,9 +17,6 @@ class Module extends Model
 
     /**
      * Consulta si un módulo específico se encuentra activo.
-     * 
-     * @param string $key
-     * @return bool
      */
     public static function isActive(string $key): bool
     {

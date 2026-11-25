@@ -10,6 +10,7 @@ class PermissionCatalog
     public static function split(string $name): array
     {
         $parts = explode('-', $name, 2);
+
         return count($parts) === 2 ? $parts : [$name, 'otros'];
     }
 
@@ -40,6 +41,7 @@ class PermissionCatalog
             $ib = array_search($b, $order);
             $ia = $ia === false ? PHP_INT_MAX : $ia;
             $ib = $ib === false ? PHP_INT_MAX : $ib;
+
             return $ia === $ib ? strcmp($a, $b) : $ia <=> $ib;
         });
 

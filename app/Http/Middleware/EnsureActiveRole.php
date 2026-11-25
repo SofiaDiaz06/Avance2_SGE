@@ -12,11 +12,11 @@ class EnsureActiveRole
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return $next($request);
         }
 
-        if (!$user->active) {
+        if (! $user->active) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -29,7 +29,7 @@ class EnsureActiveRole
             return $next($request);
         }
 
-        if ($user->hasMultipleRoles() && !$user->roles->contains('name', session('active_role'))) {
+        if ($user->hasMultipleRoles() && ! $user->roles->contains('name', session('active_role'))) {
             return redirect()->route('active-role.edit');
         }
 

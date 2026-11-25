@@ -51,7 +51,7 @@ class AccessControlService
 
             $before = [
                 'roles' => $user->getRoleNames()->sort()->values()->all(),
-                'permisos_directos' => $user->getDirectPermissions()->pluck('name')->sort()->values()->all()
+                'permisos_directos' => $user->getDirectPermissions()->pluck('name')->sort()->values()->all(),
             ];
 
             $user->syncRoles($roles);
@@ -60,7 +60,7 @@ class AccessControlService
             // Clase 12: los cambios de seguridad quedan en la bitácora
             $after = [
                 'roles' => collect($roles)->sort()->values()->all(),
-                'permisos_directos' => collect($data['permissions'] ?? [])->sort()->values()->all()
+                'permisos_directos' => collect($data['permissions'] ?? [])->sort()->values()->all(),
             ];
 
             if ($before !== $after) {
@@ -167,7 +167,7 @@ class AccessControlService
 
         if ($rolesUsing->isNotEmpty() || $usersUsing > 0) {
             throw ValidationException::withMessages([
-                'permission' => "El permiso «{$permission->name}» está en uso (roles: " 
+                'permission' => "El permiso «{$permission->name}» está en uso (roles: "
                     .($rolesUsing->join(', ') ?: 'ninguno').", usuarios con permiso directo: {$usersUsing}).",
             ]);
         }

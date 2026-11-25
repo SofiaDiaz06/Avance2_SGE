@@ -88,8 +88,9 @@ class PermissionController extends Controller implements HasMiddleware
     public function store(StorePermissionRequest $request, AccessControlService $service)
     {
         $permission = $service->createPermission($request->validated('action'), $request->validated('module'));
+
         return redirect()->route('settings.permissions.index', ['module' => $request->validated('module')])
-            ->with('success', "Permiso «{$permission->name}» creado y asignado al rol " . PermissionCatalog::superRole() . ".");
+            ->with('success', "Permiso «{$permission->name}» creado y asignado al rol ".PermissionCatalog::superRole().'.');
     }
 
     public function destroy(Permission $permission, AccessControlService $service)

@@ -10,9 +10,10 @@ class ActiveRoleController extends Controller
     public function edit(Request $request)
     {
         $user = $request->user();
-        if (!$user->hasMultipleRoles()) {
+        if (! $user->hasMultipleRoles()) {
             return redirect()->route('dashboard');
         }
+
         return view('active-role.select', [
             'roles' => $user->roles()->withCount('permissions')->orderBy('name')->get(),
             'current' => session('active_role'),
