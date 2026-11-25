@@ -18,6 +18,7 @@ class ProductsImport implements SkipsOnFailure, ToCollection, WithHeadingRow, Wi
     use SkipsFailures;
 
     public int $created = 0;
+
     public int $updated = 0;
 
     public function __construct(private InventoryService $inventory) {}
