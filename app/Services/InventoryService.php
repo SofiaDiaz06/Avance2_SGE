@@ -41,6 +41,7 @@ class InventoryService
             if ($difference === 0) {
                 return null; // el conteo coincide: no hay nada que ajustar
             }
+
             return $difference > 0
                 ? $this->move($product, 'entrada', $difference, 'ajuste', null, null, $reason)
                 : $this->move($product, 'salida', $difference, 'ajuste', null, null, $reason);
@@ -55,6 +56,7 @@ class InventoryService
         if ($product->stock <= 0 || $product->movements()->exists()) {
             return null;
         }
+
         return InventoryMovement::create([
             'product_id' => $product->id,
             'type' => 'entrada',

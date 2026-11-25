@@ -94,6 +94,7 @@ class ProductController extends Controller implements HasMiddleware
     public function trash(): View
     {
         $products = Product::onlyTrashed()->orderBy('name')->paginate(10);
+
         return view('products.trash', compact('products'));
     }
 

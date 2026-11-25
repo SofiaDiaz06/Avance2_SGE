@@ -12,10 +12,10 @@ class InventoryMovement extends Model
     // Etiquetas para mostrar el concepto en pantalla
     public const CONCEPTS = [
         'inventario_inicial' => 'Inventario inicial',
-        'compra'             => 'Compra (recepción)',
-        'venta'              => 'Venta',
-        'anulacion_venta'    => 'Anulación de venta',
-        'ajuste'             => 'Ajuste de inventario',
+        'compra' => 'Compra (recepción)',
+        'venta' => 'Venta',
+        'anulacion_venta' => 'Anulación de venta',
+        'ajuste' => 'Ajuste de inventario',
     ];
 
     protected $fillable = [
@@ -34,8 +34,8 @@ class InventoryMovement extends Model
     protected function casts(): array
     {
         return [
-            'quantity'  => 'integer',
-            'balance'   => 'integer',
+            'quantity' => 'integer',
+            'balance' => 'integer',
             'unit_cost' => 'decimal:2',
         ];
     }

@@ -92,6 +92,7 @@ class CategoryController extends Controller implements HasMiddleware
     public function trash()
     {
         $categories = Category::onlyTrashed()->orderBy('name')->paginate(10);
+
         return view('categories.trash', compact('categories'));
     }
 

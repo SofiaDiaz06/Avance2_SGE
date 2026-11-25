@@ -68,6 +68,12 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                @if ($products->hasPages())
+                    <div class="mt-4">
+                        {{ $products->withQueryString()->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

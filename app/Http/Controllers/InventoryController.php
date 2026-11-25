@@ -30,8 +30,8 @@ class InventoryController extends Controller implements HasMiddleware
         $products = Product::withTrashed()->orderBy('name')->get(['id', 'name', 'stock', 'deleted_at']);
         $product = $request->filled('product') ? $products->firstWhere('id', (int) $request->input('product')) : null;
 
-        $movements = $product 
-            ? $this->movementsQuery($request, $product)->paginate(20)->withQueryString() 
+        $movements = $product
+            ? $this->movementsQuery($request, $product)->paginate(20)->withQueryString()
             : null;
 
         return view('inventory.kardex', [

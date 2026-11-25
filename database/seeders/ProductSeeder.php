@@ -35,7 +35,7 @@ class ProductSeeder extends Seeder
 
         foreach ($products as $product) {
             $model = Product::firstOrCreate(['name' => $product['name']], $product);
-            
+
             // Clase 12: saldo inicial en el kardex para cada producto de la papelería
             $inventory->opening($model);
         }
