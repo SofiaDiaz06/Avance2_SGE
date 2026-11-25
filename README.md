@@ -1,4 +1,4 @@
-# Papelería Paraíso S.A.S. — Sistema de Gestión Empresarial (ERP)
+# Paraíso Distribuciones S.A.S.
 
 Sistema ERP en Laravel con arquitectura modular bajo enfoque RAD para la empresa **Paraíso Distribuciones S.A.S.** El sistema cumple con la integracion de movimientos internos, ventas con facturación PDF, órdenes de compra con recepciones parciales/totales, control de inventario con Kardex, auditoría, control de acceso basado en roles, API REST autenticada, importación/exportación en excel, automatización con eventos/colas.
 
