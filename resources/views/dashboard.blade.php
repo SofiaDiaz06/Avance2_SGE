@@ -98,6 +98,54 @@
                 </div>
             @endif
 
+            {{-- Tabla accionable: Órdenes de compra pendientes / parciales --}}
+            @if ($pendingPurchases->isNotEmpty())
+                <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-200/80">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Órdenes de compra pendientes de recepción</h3>
+                            <p class="text-xs text-slate-500">Acciones directas para revisar o recibir mercancía</p>
+                        </div>
+                        @can('ver-compras')
+                            <a href="{{ route('purchases.index') }}" class="text-xs font-semibold text-brand hover:underline">Ver todas</a>
+                        @endcan
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                    <th class="py-2.5 pe-4">Orden</th>
+                                    <th class="py-2.5 px-4">Proveedor</th>
+                                    <th class="py-2.5 px-4">Estado</th>
+                                    <th class="py-2.5 px-4">Total</th>
+                                    <th class="py-2.5 ps-4 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach ($pendingPurchases as $purchase)
+                                    <tr>
+                                        <td class="py-3 pe-4 font-semibold text-slate-800">{{ $purchase->purchase_number }}</td>
+                                        <td class="py-3 px-4 text-slate-600">{{ $purchase->provider?->name ?? 'Proveedor' }}</td>
+                                        <td class="py-3 px-4">
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold {{ $purchase->status === 'parcial' ? 'bg-amber-100 text-amber-700' : 'bg-orange-100 text-orange-700' }}">
+                                                {{ ucfirst($purchase->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 font-medium text-slate-700">${{ number_format((float) $purchase->total, 0) }}</td>
+                                        <td class="py-3 ps-4 text-right">
+                                            <a href="{{ route('purchases.show', $purchase) }}" class="inline-flex items-center rounded-lg bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand hover:bg-brand hover:text-white transition">
+                                                Gestionar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
             {{-- Gráficos (Chart.js) --}}
             @if (count($charts))
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -187,4 +235,40 @@
 
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chart === 'undefined') return;
+            const palette = ['#004e89', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+
+            document.querySelectorAll('canvas[data-chart]').forEach(function (canvas) {
+                if (canvas.dataset.rendered === '1') return;
+                const cfg = JSON.parse(canvas.dataset.chart || '{}');
+                const isPie = cfg.type === 'doughnut' || cfg.type === 'pie';
+                const datasets = (cfg.datasets || []).map((ds, idx) => ({
+                    ...ds,
+                    backgroundColor: isPie
+                        ? (cfg.labels || []).map((_, i) => palette[i % palette.length])
+                        : palette[idx % palette.length],
+                    borderColor: palette[idx % palette.length],
+                    borderWidth: 2,
+                    tension: 0.35,
+                }));
+
+                new Chart(canvas, {
+                    type: cfg.type || 'bar',
+                    data: { labels: cfg.labels || [], datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: cfg.horizontal ? 'y' : 'x',
+                        plugins: { legend: { display: isPie || datasets.length > 1 } },
+                        scales: isPie ? {} : { y: { beginAtZero: true }, x: { beginAtZero: true } },
+                    },
+                });
+                canvas.dataset.rendered = '1';
+            });
+        });
+    </script>
 </x-app-layout>

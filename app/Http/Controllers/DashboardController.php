@@ -157,12 +157,22 @@ class DashboardController extends Controller
 
         // Sugerencia de reabastecimiento: productos activos con stock bajo
         $lowStock = collect();
-        if ($user->can('crear-compras')) {
+        if ($user->can('crear-compras') || $user->can('ver-productos')) {
             $lowStock = Product::where('active', true)
                 ->where('stock', '<=', 5)
                 ->orderBy('stock')
                 ->limit(10)
                 ->get(['id', 'name', 'stock']);
+        }
+
+        // Órdenes de compra pendientes o parciales para tabla accionable
+        $pendingPurchases = collect();
+        if ($user->can('ver-compras')) {
+            $pendingPurchases = Purchase::with('provider:id,name')
+                ->whereIn('status', ['pendiente', 'parcial'])
+                ->orderByDesc('purchase_date')
+                ->limit(5)
+                ->get(['id', 'purchase_number', 'provider_id', 'purchase_date', 'total', 'status']);
         }
 
         return view('dashboard', [
@@ -173,6 +183,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'topProducts' => $topProducts,
             'lowStock' => $lowStock,
+            'pendingPurchases' => $pendingPurchases,
             'charts' => $this->charts($user, $topProducts),
         ]);
     }

@@ -119,6 +119,9 @@
             <div class="text-xs text-slate-400 truncate">{{ Auth::user()->email }}</div>
         </div>
         <div class="mt-2 space-y-1">
+            <x-responsive-nav-link :href="route('notifications.index')">
+                Notificaciones ({{ Auth::user()->unreadNotifications()->count() }})
+            </x-responsive-nav-link>
             @if (Auth::user()->hasMultipleRoles())
                 <x-responsive-nav-link :href="route('active-role.edit')">
                     Cambiar rol
@@ -157,8 +160,19 @@
             @endisset
         </div>
 
-        <!-- Settings Dropdown -->
+        <!-- Settings Dropdown y Campana -->
         <div class="hidden sm:flex sm:items-center sm:ms-6">
+            {{-- Campana de notificaciones (Clase 14) --}}
+            @php($unread = Auth::user()->unreadNotifications()->count())
+            <a href="{{ route('notifications.index') }}" class="relative me-4 text-gray-500 hover:text-gray-700" title="Notificaciones">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0.5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                @if ($unread > 0)
+                    <span class="absolute -top-1 -right-2 rounded-full bg-red-600 px-1.5 text-xs font-bold text-white">{{ $unread }}</span>
+                @endif
+            </a>
+
             <x-dropdown align="right" width="48">
                 <x-slot name="trigger">
                     <button class="flex items-center gap-3 rounded-full py-1 pe-2 ps-1 text-start transition hover:bg-slate-100 focus:outline-none">

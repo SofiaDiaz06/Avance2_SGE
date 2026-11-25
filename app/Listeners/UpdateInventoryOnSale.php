@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\SaleCompleted;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use App\Models\Module;
 
 class UpdateInventoryOnSale
@@ -23,7 +21,7 @@ class UpdateInventoryOnSale
     public function handle(SaleCompleted $event): void
     {
         // Condición clave: Si el módulo de productos está inactivo, omite el descuento de stock de forma elegante
-        if (!Module::isActive('products')) {
+        if (! Module::isActive('products')) {
             return;
         }
 

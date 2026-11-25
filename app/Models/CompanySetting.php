@@ -33,16 +33,16 @@ class CompanySetting extends Model
     ];
 
     protected $fillable = [
-        'trade_name', 
-        'legal_name', 
-        'nit', 
-        'slogan', 
-        'address', 
-        'city', 
-        'phone', 
-        'email', 
-        'website', 
-        'primary_color', 
+        'trade_name',
+        'legal_name',
+        'nit',
+        'slogan',
+        'address',
+        'city',
+        'phone',
+        'email',
+        'website',
+        'primary_color',
         'logo_path',
     ];
 
@@ -111,17 +111,17 @@ class CompanySetting extends Model
     public function brandScale(): array
     {
         $mixes = [
-            50 => 0.93, 
-            100 => 0.85, 
-            200 => 0.72, 
-            300 => 0.55, 
-            400 => 0.38, 
+            50 => 0.93,
+            100 => 0.85,
+            200 => 0.72,
+            300 => 0.55,
+            400 => 0.38,
             500 => 0.22,
-            600 => 0.1, 
-            700 => 0, 
-            800 => -0.15, 
-            900 => -0.3, 
-            950 => -0.57
+            600 => 0.1,
+            700 => 0,
+            800 => -0.15,
+            900 => -0.3,
+            950 => -0.57,
         ];
 
         return collect($mixes)->map(fn ($mix) => $this->brandRgb($mix))->all();

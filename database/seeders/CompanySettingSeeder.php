@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\CompanySetting;
@@ -8,7 +9,7 @@ class CompanySettingSeeder extends Seeder
 {
     public function run(): void
     {
-        if (!CompanySetting::query()->exists()) {
+        if (! CompanySetting::query()->exists()) {
             CompanySetting::create(CompanySetting::DEFAULTS);
         }
     }
