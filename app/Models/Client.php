@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\Concerns\Auditable;
+use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
 {
+    /** @use HasFactory<ClientFactory> */
     use Auditable, HasFactory, SoftDeletes;
 
     // Auditoría (Clase 12)

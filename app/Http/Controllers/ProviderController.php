@@ -31,8 +31,8 @@ class ProviderController extends Controller implements HasMiddleware
                 $search = '%'.$request->string('search').'%';
                 $q->where(function ($q) use ($search) {
                     $q->where('name', 'like', $search)
-                      ->orWhere('document_number', 'like', $search)
-                      ->orWhere('contact_name', 'like', $search);
+                        ->orWhere('document_number', 'like', $search)
+                        ->orWhere('contact_name', 'like', $search);
                 });
             })
             ->when($request->filled('status'), fn ($q) => $q->where('active', $request->input('status') === 'active'))

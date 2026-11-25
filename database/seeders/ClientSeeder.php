@@ -24,7 +24,7 @@ class ClientSeeder extends Seeder
 
         foreach ($clients as $client) {
             Client::firstOrCreate(
-                ['document_number' => $client['document_number']], 
+                ['document_number' => $client['document_number']],
                 $client
             );
         }

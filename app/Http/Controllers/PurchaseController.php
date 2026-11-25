@@ -34,8 +34,8 @@ class PurchaseController extends Controller implements HasMiddleware
                 $search = '%'.$request->string('search').'%';
                 $q->where(function ($q) use ($search) {
                     $q->where('purchase_number', 'like', $search)
-                      ->orWhere('provider_invoice', 'like', $search)
-                      ->orWhereHas('provider', fn ($q) => $q->where('name', 'like', $search));
+                        ->orWhere('provider_invoice', 'like', $search)
+                        ->orWhereHas('provider', fn ($q) => $q->where('name', 'like', $search));
                 });
             })
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
@@ -74,6 +74,7 @@ class PurchaseController extends Controller implements HasMiddleware
     public function show(Purchase $purchase)
     {
         $purchase->load(['provider', 'user', 'details.product']);
+
         return view('purchases.show', ['purchase' => $purchase]);
     }
 
